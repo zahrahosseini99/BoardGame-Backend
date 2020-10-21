@@ -35,6 +35,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+AUTH_USER_MODEL = 'user.UserProfile'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
