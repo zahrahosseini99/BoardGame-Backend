@@ -8,7 +8,7 @@ from user import serializers as user_serializers
 
 
 class RegisterView(generics.CreateAPIView):
-    
+
     permission_classes = (AllowAny,)
     serializer_class = auth_serializers.RegisterSerializer
 
@@ -20,6 +20,5 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()
         serializer_user = user_serializers.UserSerializer(user)
         tokens = serializer.data['tokens']
-        data = {"refresh": tokens["refresh"], "access": tokens["access"], "id": serializer_user.data["id"]}
+        data = {"refresh": tokens["refresh"], "access": tokens["access"]}
         return Response(data, status=status.HTTP_201_CREATED)
-
