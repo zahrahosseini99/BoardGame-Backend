@@ -9,7 +9,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserProfile
-        fields = ('email', 'first_name', 'last_name', 'username', 'password', 'tokens')
+        fields = ('email', 'username', 'password', 'tokens')
         extra_kwargs = {'password': {'write_only': True}}
 
     def get_tokens(self, user):
@@ -25,6 +25,4 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return models.UserProfile.objects.create_user(username=validated_data.get("username"),
                                                       email=validated_data.get("email"),
-                                                      password=validated_data.get("password"),
-                                                      first_name=validated_data.get("first_name"),
-                                                      last_name=validated_data.get("last_name"))
+                                                      password=validated_data.get("password"))
