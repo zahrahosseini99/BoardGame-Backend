@@ -11,7 +11,7 @@ import os
 import sys
 
 
-path = '/home/zahrahosseini99/BoardGame'
+path = '/home/zahrahosseini99/BoardGame-Backend'
 if path not in sys.path:
     sys.path.insert(0, path)
 
