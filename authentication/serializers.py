@@ -2,7 +2,7 @@ from django.utils.six import text_type
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from user import models
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class RegisterSerializer(serializers.ModelSerializer):
     tokens = serializers.SerializerMethodField()
@@ -26,3 +26,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         return models.UserProfile.objects.create_user(username=validated_data.get("username"),
                                                       email=validated_data.get("email"),
                                                       password=validated_data.get("password"))
+class LoginSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['id'] = user.id
+
+        return token
+
+

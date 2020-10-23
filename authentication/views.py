@@ -20,5 +20,5 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()
         serializer_user = user_serializers.UserSerializer(user)
         tokens = serializer.data['tokens']
-        data = {"refresh": tokens["refresh"], "access": tokens["access"]}
+        data = {"refresh": tokens["refresh"], "access": tokens["access"], "id": serializer_user.data["id"]}
         return Response(data, status=status.HTTP_201_CREATED)
