@@ -7,6 +7,9 @@ from user.models import UserProfile
 from . import serializers as auth_serializers
 from user import serializers as user_serializers
 
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.exceptions import ValidationError
+
 
 class RegisterView(generics.CreateAPIView):
 
@@ -34,7 +37,12 @@ class LoginView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        user = UserProfile.objects.get(username=request.data['username'])
+        try:
+            user = UserProfile.objects.get(username=request.data['username'])
+        except ObjectDoesNotExist:
+            data = dict()
+            data["non_field_errors"] = ["Either the username or entry doesn't exist."]
+            return Response(data)
         if serializer.is_valid():
             serializer.validated_data['id'] = user.id
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
