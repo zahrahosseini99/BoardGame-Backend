@@ -42,7 +42,7 @@ class LoginView(TokenObtainPairView):
         except ObjectDoesNotExist:
             data = dict()
             data["non_field_errors"] = ["Either the username or entry doesn't exist."]
-            return Response(data)
+            return Response(data,status=status.HTTP_400_BAD_REQUEST)
         if serializer.is_valid():
             serializer.validated_data['id'] = user.id
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
