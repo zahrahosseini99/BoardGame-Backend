@@ -4,6 +4,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from user import models
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from rest_framework.response import Response
+from rest_framework import status
+
 class RegisterSerializer(serializers.ModelSerializer):
     tokens = serializers.SerializerMethodField()
 
@@ -34,5 +37,28 @@ class LoginSerializer(TokenObtainPairSerializer):
         token['id'] = user.id
 
         return token
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True)
+    old_password = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = models.UserProfile
+        fields = ('old_password', 'password')
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError({"old_password": "Old password is not correct"})
+        return value
+
+    def update(self, instance, validated_data):
+
+        instance.set_password(validated_data['password'])
+        instance.save()
+        return instance,Response("changed!!!", status=status.HTTP_201_CREATED)
+
+
 
 

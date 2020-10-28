@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics 
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -10,6 +10,8 @@ from user import serializers as user_serializers
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import ValidationError
 
+
+from rest_framework.permissions import IsAuthenticated
 
 class RegisterView(generics.CreateAPIView):
 
@@ -47,3 +49,11 @@ class LoginView(TokenObtainPairView):
             serializer.validated_data['id'] = user.id
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ChangePasswordView(generics.UpdateAPIView):
+
+    queryset = UserProfile.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = auth_serializers.ChangePasswordSerializer
+
+
