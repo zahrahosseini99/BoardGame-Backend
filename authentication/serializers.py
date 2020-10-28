@@ -39,6 +39,41 @@ class LoginSerializer(TokenObtainPairSerializer):
         return token
 
 
+class EditProfileSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+
+    class Meta:
+        model = models.UserProfile
+        fields = ('email', 'first_name', 'last_name', 'age')
+        # extra_kwargs = {
+        #     'first_name': {'required': True},
+        #     'last_name': {'required': True},
+        # }
+
+    def validate_email(self, value):
+        user = self.context['request'].user
+        if models.UserProfile.objects.exclude(pk=user.pk).filter(email=value).exists():
+            raise serializers.ValidationError({"email": "This email is already in use."})
+        return value
+
+    # def validate_username(self, value):
+    #     user = self.context['request'].user
+    #     if User.objects.exclude(pk=user.pk).filter(username=value).exists():
+    #         raise serializers.ValidationError({"username": "This username is already in use."})
+    #     return value
+
+    def update(self, instance, validated_data):
+        instance.email = validated_data['email']
+        instance.first_name = validated_data['first_name']
+        instance.last_name = validated_data['last_name']
+        instance.age = validated_data['age']
+        # instance.username = validated_data['username']
+
+        instance.save()
+
+        return instance
+
+
 class ChangePasswordSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
     old_password = serializers.CharField(write_only=True, required=True)
@@ -58,7 +93,3 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         instance.set_password(validated_data['password'])
         instance.save()
         return instance,Response("changed!!!", status=status.HTTP_201_CREATED)
-
-
-
-
