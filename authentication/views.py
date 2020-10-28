@@ -57,9 +57,8 @@ class EditProfileView(generics.UpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = auth_serializers.EditProfileSerializer
     def get(self, request, pk=None):
-        snippets = UserProfile.objects.all().filter(pk=pk)
-        print("**************pk*************",pk)
-        serializer = auth_serializers.EditProfileSerializer(snippets, many=True)
+        userInfo = UserProfile.objects.all().filter(pk=pk)
+        serializer = auth_serializers.EditProfileSerializer(userInfo, many=True)
         return Response(serializer.data,status=status.HTTP_201_CREATED)
 
 class ChangePasswordView(generics.UpdateAPIView):

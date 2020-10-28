@@ -44,7 +44,7 @@ class EditProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserProfile
-        fields = ('email', 'first_name', 'last_name', 'age')
+        fields = ('email', 'first_name', 'last_name', 'avatar','age')
         # extra_kwargs = {
         #     'first_name': {'required': True},
         #     'last_name': {'required': True},
@@ -66,7 +66,9 @@ class EditProfileSerializer(serializers.ModelSerializer):
         instance.email = validated_data['email']
         instance.first_name = validated_data['first_name']
         instance.last_name = validated_data['last_name']
+        instance.avatar = validated_data['avatar']
         instance.age = validated_data['age']
+
         # instance.username = validated_data['username']
 
         instance.save()
