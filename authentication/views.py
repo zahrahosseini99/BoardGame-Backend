@@ -1,4 +1,4 @@
-from rest_framework import generics 
+from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -50,10 +50,16 @@ class LoginView(TokenObtainPairView):
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class EditProfileView(generics.UpdateAPIView):
+
+    queryset = UserProfile.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = auth_serializers.EditProfileSerializer
+
+
 class ChangePasswordView(generics.UpdateAPIView):
 
     queryset = UserProfile.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = auth_serializers.ChangePasswordSerializer
-
-
