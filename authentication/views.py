@@ -6,12 +6,9 @@ from rest_framework import status
 from user.models import UserProfile
 from . import serializers as auth_serializers
 from user import serializers as user_serializers
-
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.exceptions import ValidationError
-
-
 from rest_framework.permissions import IsAuthenticated
+
 
 class RegisterView(generics.CreateAPIView):
 
@@ -44,25 +41,45 @@ class LoginView(TokenObtainPairView):
         except ObjectDoesNotExist:
             data = dict()
             data["non_field_errors"] = ["Either the username or entry doesn't exist."]
-            return Response(data,status=status.HTTP_400_BAD_REQUEST)
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
         if serializer.is_valid():
             serializer.validated_data['id'] = user.id
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EditProfileView(generics.UpdateAPIView):
+class EditProfileView(generics.RetrieveUpdateAPIView):
 
     queryset = UserProfile.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = auth_serializers.EditProfileSerializer
-    def get(self, request, pk=None):
-        userInfo = UserProfile.objects.all().filter(pk=pk)
-        serializer = auth_serializers.EditProfileSerializer(userInfo, many=True)
-        return Response(serializer.data,status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        userInfo = request.user
+        serializer = auth_serializers.EditProfileSerializer(instance=userInfo)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        userInfo = request.user
+        data = request.data
+        serializer = self.get_serializer(instance=userInfo, data=data)
+        if serializer.is_valid(True):
+            serializer.update(instance=userInfo, validated_data=serializer.validated_data)
+            return Response("OK", status=status.HTTP_202_ACCEPTED)
+        return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
+
 
 class ChangePasswordView(generics.UpdateAPIView):
 
     queryset = UserProfile.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = auth_serializers.ChangePasswordSerializer
+
+    def put(self, request):
+        userInfo = request.user
+        data = request.data
+        serializer = self.get_serializer(instance=userInfo, data=data)
+        if serializer.is_valid(True):
+            serializer.update(instance=userInfo, validated_data=serializer.validated_data)
+            return Response("OK", status=status.HTTP_202_ACCEPTED)
+        return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)

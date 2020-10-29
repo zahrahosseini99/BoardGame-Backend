@@ -4,8 +4,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from user import models
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from rest_framework.response import Response
-from rest_framework import status
 
 class RegisterSerializer(serializers.ModelSerializer):
     tokens = serializers.SerializerMethodField()
@@ -29,6 +27,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         return models.UserProfile.objects.create_user(username=validated_data.get("username"),
                                                       email=validated_data.get("email"),
                                                       password=validated_data.get("password"))
+
+
 class LoginSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -40,11 +40,11 @@ class LoginSerializer(TokenObtainPairSerializer):
 
 
 class EditProfileSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
+    # email = serializers.EmailField(required=True)
 
     class Meta:
         model = models.UserProfile
-        fields = ('email', 'first_name', 'last_name', 'avatar','age')
+        fields = ('email', 'first_name', 'last_name', 'avatar', 'age')
         # extra_kwargs = {
         #     'first_name': {'required': True},
         #     'last_name': {'required': True},
@@ -61,19 +61,6 @@ class EditProfileSerializer(serializers.ModelSerializer):
     #     if User.objects.exclude(pk=user.pk).filter(username=value).exists():
     #         raise serializers.ValidationError({"username": "This username is already in use."})
     #     return value
-
-    def update(self, instance, validated_data):
-        instance.email = validated_data['email']
-        instance.first_name = validated_data['first_name']
-        instance.last_name = validated_data['last_name']
-        instance.avatar = validated_data['avatar']
-        instance.age = validated_data['age']
-
-        # instance.username = validated_data['username']
-
-        instance.save()
-
-        return instance
 
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
@@ -94,4 +81,4 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
         instance.set_password(validated_data['password'])
         instance.save()
-        return instance,Response("changed!!!", status=status.HTTP_201_CREATED)
+        return instance
