@@ -7,7 +7,8 @@ def run():
     game_ids = list(range(20))
     games = bgg.game_list(game_ids)
     for g in games:
-        obj = game.objects.create(name=g.name,
+        obj = game.objects.create(id=g.id,
+                                  name=g.name,
                                   description=g.description,
                                   category=g.categories,
                                   images=g.image,
