@@ -11,8 +11,9 @@ def run():
                                   name=g.name,
                                   description=g.description,
                                   category=g.categories,
-                                  images=g.image,
+                                  image=g.image,
                                   min_players=g.min_players,
                                   max_players=g.max_players,
-                                  difficulty=g.rating_average_weight)
+                                  difficulty=g.rating_average_weight,
+                                  rate=g.rating_average)
         obj.save()

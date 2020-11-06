@@ -6,4 +6,4 @@ class GameInfoPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.game
-        fields = ('id', 'name', 'description', 'category', 'images', 'min_players', 'max_players', 'difficulty')
+        fields = ('id', 'name', 'description', 'category', 'image', 'min_players', 'max_players', 'difficulty','rate')
