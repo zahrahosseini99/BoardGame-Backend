@@ -26,3 +26,13 @@ class HotnessGamesListView(generics.RetrieveAPIView):
         hotgames = game.objects.all().order_by('rate').reverse()[:5]
         serializer = game_info_page_serializers.GameInfoPageSerializer(hotgames, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class GamesListView(generics.RetrieveAPIView):
+    queryset = game.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = game_info_page_serializers.GameInfoPageSerializer
+
+    def get(self, request):
+        gamesList=game.objects.all().order_by('rate').reverse()
+        serializer = game_info_page_serializers.GameInfoPageSerializer(gamesList,many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
