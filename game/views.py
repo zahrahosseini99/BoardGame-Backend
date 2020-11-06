@@ -15,3 +15,14 @@ class GameInfoPageView(generics.RetrieveAPIView):
         gameInfo = game.objects.all().get(pk=pk)
         serializer = game_info_page_serializers.GameInfoPageSerializer(gameInfo)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class HotnessGamesListView(generics.RetrieveAPIView):
+    queryset = game.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = game_info_page_serializers.GameInfoPageSerializer
+
+    def get(self, request):
+        hotgames = game.objects.all().order_by('rate').reverse()[:5]
+        serializer = game_info_page_serializers.GameInfoPageSerializer(hotgames, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
