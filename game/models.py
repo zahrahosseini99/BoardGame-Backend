@@ -2,7 +2,7 @@ from django.db import models
 
 
 class game(models.Model):
-    id = models.PositiveIntegerField()
+    id = models.PositiveIntegerField(primary_key=True)
     name = models.CharField('Name', max_length=200)
     description = models.TextField('Description')
     category = models.CharField('Category', blank=True, max_length=200)
