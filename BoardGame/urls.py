@@ -40,6 +40,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('user.urls')),
     path('auth/', include('authentication.urls')),
-    path('', schema_view.with_ui('swagger', 
-                                            cache_timeout=0),name='schema-swagger-ui'),
+    path('game/', include('game.urls')),
+    path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
