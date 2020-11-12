@@ -46,3 +46,9 @@ class SearchUserView(generics.ListAPIView):
     serializer_class = UserSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['^username']
+
+class SearchGameView(generics.ListAPIView):
+    queryset = game.objects.all()
+    serializer_class = game_info_page_serializers.GameInfoPageSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^name']
