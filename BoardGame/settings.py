@@ -28,8 +28,8 @@ SECRET_KEY = 'xx0dexeq^ryrg971n1co-yff56k!pzpo)o41#5(xfwtp#keitj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = ['gameboard.pythonanywhere.com']
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['gameboard.pythonanywhere.com']
+#ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -79,8 +79,10 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework_swagger',
     'rest_framework_simplejwt',
+    'django_extensions',
     'authentication',
     'user',
+    'game',
 ]
 
 MIDDLEWARE = [
