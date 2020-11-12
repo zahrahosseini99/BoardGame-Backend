@@ -2,8 +2,11 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import filters
 from . import serializers as game_info_page_serializers
 from .models import game
+from user.models import UserProfile
+from user.serializers import UserSerializer
 
 
 class GameInfoPageView(generics.RetrieveAPIView):
@@ -36,3 +39,10 @@ class GamesListView(generics.RetrieveAPIView):
         gamesList=game.objects.all().order_by('rate').reverse()
         serializer = game_info_page_serializers.GameInfoPageSerializer(gamesList,many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class SearchUserView(generics.ListAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^username']
