@@ -72,3 +72,15 @@ class CreatePlayView(generics.CreateAPIView):
             player = UserProfile.objects.all().get(username=player_data['username'])
             play.players.add(player)
         return Response("OK", status=status.HTTP_202_ACCEPTED)
+
+class PlaysListView(generics.RetrieveUpdateAPIView):
+
+    queryset = play.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = play_serializer.playSerializer
+
+    def get(self, request):
+        userInfo = request.user
+        plays_query = userInfo.play.all()
+        serializer = play_serializer.playSerializer(instance=plays_query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
