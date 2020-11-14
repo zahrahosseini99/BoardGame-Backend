@@ -10,4 +10,5 @@ urlpatterns = [
     path('search_game/name/', views.SearchGameView.as_view()),
     path('create_play/', views.CreatePlayView.as_view()),
     path('plays_list/', views.PlaysListView.as_view()),
+    path('edit_play/<int:pk>/', views.EditPlayView.as_view()),
 ]
