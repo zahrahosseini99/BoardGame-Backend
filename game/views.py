@@ -73,14 +73,44 @@ class CreatePlayView(generics.CreateAPIView):
             play.players.add(player)
         return Response("OK", status=status.HTTP_202_ACCEPTED)
 
-class PlaysListView(generics.RetrieveUpdateAPIView):
+
+class EditPlayView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = play.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = play_serializer.playSerializer
 
-    def get(self, request):
-        userInfo = request.user
-        plays_query = userInfo.play.all()
-        serializer = play_serializer.playSerializer(instance=plays_query, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request, pk=None):
+        user = request.user
+        playInfo = play.objects.all().get(pk=pk)
+        plays_query = user.play.all()
+        if not plays_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        serializer = play_serializer.playSerializer(playInfo)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def put(self, request, pk=None):
+        user = request.user
+        data = request.data
+        playInfo = play.objects.all().get(pk=pk)
+        plays_query = user.play.all()
+        if not plays_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(instance=playInfo, data=request.data)
+        if serializer.is_valid(True):
+            p = serializer.update(instance=playInfo, validated_data=serializer.validated_data)
+            p.players.clear()
+            for player_data in data['players']:
+                player = UserProfile.objects.all().get(username=player_data['username'])
+                p.players.add(player)
+            return Response("OK", status=status.HTTP_202_ACCEPTED)
+        return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk=None):
+        user = request.user
+        plays_query = user.play.all()
+        if not plays_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        play = plays_query.get(pk=pk)
+        play.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
