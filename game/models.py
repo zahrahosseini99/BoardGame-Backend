@@ -16,6 +16,7 @@ class game(models.Model):
 
 class play(models.Model):
     id = models.AutoField(primary_key=True)
+    owner=models.ForeignKey(UserProfile,related_name='owner',null=True,  on_delete=models.CASCADE)
     players = models.ManyToManyField(UserProfile, related_name='play', blank=True)
     game = models.ForeignKey(game, related_name='play', on_delete=models.CASCADE)
     date = models.DateField()
