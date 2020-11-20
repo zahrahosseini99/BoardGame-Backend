@@ -147,7 +147,8 @@ class EditPlayView(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, pk=None):
         user = request.user
-        plays_query = user.play.all()
+        plays_query = user.owner.all()
+        print('*************', plays_query)
         if not plays_query.filter(pk=pk).exists():
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
         play = plays_query.get(pk=pk)
