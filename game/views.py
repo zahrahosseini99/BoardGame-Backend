@@ -147,10 +147,21 @@ class EditPlayView(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, pk=None):
         user = request.user
-        plays_query = user.owner.all()
-        print('*************', plays_query)
-        if not plays_query.filter(pk=pk).exists():
+        player_query = user.play.all()
+        owner_query = user.owner.all()
+        if owner_query.filter(pk=pk).exists():
+            play = owner_query.get(pk=pk)
+            play.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        elif player_query.filter(pk=pk).exists():
+            play = player_query.get(pk=pk)
+            last_players = play.players.all()
+            play.players.clear()
+            for player_data in last_players:
+                if user == player_data:
+                    continue
+                player = UserProfile.objects.all().get(username=player_data['username'])
+                play.players.add(player)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
-        play = plays_query.get(pk=pk)
-        play.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
