@@ -132,7 +132,7 @@ class EditPlayView(generics.RetrieveUpdateDestroyAPIView):
         user = request.user
         data = request.data
         playInfo = play.objects.all().get(pk=pk)
-        plays_query = user.play.all()
+        plays_query = user.owner.all()
         if not plays_query.filter(pk=pk).exists():
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
         serializer = self.get_serializer(instance=playInfo, data=request.data)
