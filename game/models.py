@@ -17,7 +17,16 @@ class game(models.Model):
 class play(models.Model):
     id = models.AutoField(primary_key=True)
     owner=models.ForeignKey(UserProfile,related_name='owner',null=True,  on_delete=models.CASCADE)
-    players = models.ManyToManyField(UserProfile, related_name='play', blank=True)
+    players = models.ManyToManyField(UserProfile, related_name='play', blank=True,through='playmate')
     game = models.ForeignKey(game, related_name='play', on_delete=models.CASCADE)
     date = models.DateField()
     place = models.CharField(blank=True, max_length=2000)
+
+class playmate(models.Model):
+    play=models.ForeignKey(play,on_delete=models.CASCADE)
+    user=models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+    color=models.CharField('Color', max_length=200, blank=True)
+    starting_position=models.CharField('Starting position', max_length=200, blank=True)
+    score=models.CharField('Score', max_length=200, blank=True)
+    is_won=models.BooleanField('Is won', default=False)
+    is_first_time=models.BooleanField('Is first time', default=False)
