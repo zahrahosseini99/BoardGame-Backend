@@ -101,7 +101,7 @@ class PlaysListView(generics.RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class OwnerPlaysListView(generics.RetrieveUpdateAPIView):
+class OwnerPlaysListView(generics.RetrieveAPIView):
 
     queryset = play.objects.all()
     permission_classes = (IsAuthenticated,)
