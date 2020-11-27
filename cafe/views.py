@@ -36,6 +36,17 @@ class CreateCafeView(generics.CreateAPIView):
         return Response("OK", status=status.HTTP_202_ACCEPTED)
 
 
+class CafeListView(generics.RetrieveAPIView):
+    queryset = Cafe.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = cafe_serializer.CafeSerializer
+
+    def get(self, request):
+        cafeList = Cafe.objects.all()
+        serializer = cafe_serializer.CafeSerializer(cafeList, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 class OwnerCafesListView(generics.RetrieveAPIView):
 
     queryset = Cafe.objects.all()
