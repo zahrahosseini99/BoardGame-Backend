@@ -5,4 +5,5 @@ urlpatterns = [
     path('create_cafe/', views.CreateCafeView.as_view()),
     path('search_cafe/name/', views.SearchCafeView.as_view()),
     path('owner_cafes_list/', views.OwnerCafesListView.as_view()),
+    path('edit_cafe/<int:pk>/', views.EditCafeView.as_view()),
 ]
