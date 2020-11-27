@@ -7,4 +7,5 @@ urlpatterns = [
     path('owner_cafes_list/', views.OwnerCafesListView.as_view()),
     path('edit_cafe/<int:pk>/', views.EditCafeView.as_view()),
     path('cafe_list/', views.CafeListView.as_view()),
+    path('day_cafe_list/', views.RandomCafeListView.as_view()),
 ]

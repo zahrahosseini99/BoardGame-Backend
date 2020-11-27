@@ -8,7 +8,7 @@ from . import serializers as cafe_serializer
 from .models import Cafe
 from user.models import UserProfile
 from game.models import game
-
+import random
 
 class SearchCafeView(generics.ListAPIView):
     queryset = Cafe.objects.all()
@@ -61,6 +61,20 @@ class OwnerCafesListView(generics.RetrieveAPIView):
         for cafe in serializer.data:
             cafe['owner'] = UserProfile.objects.get(id=cafe['owner']).username
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RandomCafeListView(generics.RetrieveAPIView):
+    queryset = Cafe.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = cafe_serializer.CafeSerializer
+
+    def get(self, request):
+        cafe_list = list(Cafe.objects.all())
+        if len(cafe_list) > 20 :
+            serializer = cafe_serializer.CafeSerializer(random.sample(cafe_list, 20), many=True)
+        else:
+            serializer = cafe_serializer.CafeSerializer(cafe_list, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class EditCafeView(generics.RetrieveUpdateDestroyAPIView):
