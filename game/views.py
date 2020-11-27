@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework import filters
 from . import serializers as game_info_page_serializers
 from . import serializers as play_serializer
-from .models import game, play
+from .models import game, play, playmate
 from user.models import UserProfile
 from user.serializers import UserSerializer
 
@@ -92,9 +92,12 @@ class PlaysListView(generics.RetrieveUpdateAPIView):
     serializer_class = play_serializer.playSerializer
 
     def get(self, request):
-        userInfo = request.user
-        plays_query = userInfo.play.all()
-        serializer = play_serializer.playSerializer(instance=plays_query, many=True)
+        user = request.user
+        playmate_query = playmate.objects.filter(username=user)
+        plays = list()
+        for pm in playmate_query.all():
+            plays.append(pm.play.all()[0])
+        serializer = play_serializer.playSerializer(plays, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
