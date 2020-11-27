@@ -34,3 +34,19 @@ class CreateCafeView(generics.CreateAPIView):
             g = game.objects.get(id=game_id['id'])
             cafe.games.add(g)
         return Response("OK", status=status.HTTP_202_ACCEPTED)
+
+
+class OwnerCafesListView(generics.RetrieveAPIView):
+
+    queryset = Cafe.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = cafe_serializer.CafeSerializer
+
+    def get(self, request):
+        user = request.user
+        cafes_query = user.Cafe.all()
+        serializer = cafe_serializer.CafeSerializer(cafes_query, many=True)
+        print(serializer.data)
+        for cafe in serializer.data:
+            cafe['owner'] = UserProfile.objects.get(id=cafe['owner']).username
+        return Response(serializer.data, status=status.HTTP_200_OK)
