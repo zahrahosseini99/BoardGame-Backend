@@ -10,6 +10,18 @@ from user.models import UserProfile
 from game.models import game
 import random
 
+
+class CafeInfoPageView(generics.RetrieveAPIView):
+    queryset = Cafe.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = cafe_serializer.CafeSerializer
+
+    def get(self, request, pk=None):
+        cafeInfo = Cafe.objects.all().get(pk=pk)
+        serializer = cafe_serializer.CafeSerializer(cafeInfo)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 class SearchCafeView(generics.ListAPIView):
     queryset = Cafe.objects.all()
     serializer_class = cafe_serializer.CafeSerializer
