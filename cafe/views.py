@@ -50,3 +50,46 @@ class OwnerCafesListView(generics.RetrieveAPIView):
         for cafe in serializer.data:
             cafe['owner'] = UserProfile.objects.get(id=cafe['owner']).username
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class EditCafeView(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = Cafe.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = cafe_serializer.CafeSerializer
+
+    def get(self, request, pk=None):
+        user = request.user
+        cafe_info = Cafe.objects.all().get(pk=pk)
+        cafes_query = user.Cafe.all()
+        if not cafes_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        serializer = cafe_serializer.CafeSerializer(cafe_info)
+        serializer.data['owner'] = UserProfile.objects.get(id=serializer.data['owner']).username
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def put(self, request, pk=None):
+        user = request.user
+        data = request.data
+        cafe_info = Cafe.objects.all().get(pk=pk)
+        cafes_query = user.Cafe.all()
+        if not cafes_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(instance=cafe_info, data=data)
+        if serializer.is_valid(True):
+            cafe = serializer.update(instance=cafe_info, validated_data=serializer.validated_data)
+            cafe.games.clear()
+            for game_id in data['games']:
+                g = game.objects.get(id=game_id['id'])
+                cafe.games.add(g)
+            return Response("OK", status=status.HTTP_202_ACCEPTED)
+        return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk=None):
+        user = request.user
+        cafe_info = Cafe.objects.all().get(pk=pk)
+        cafes_query = user.Cafe.all()
+        if not cafes_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        cafe_info.delete()
+        return Response("OK", status=status.HTTP_202_ACCEPTED)
