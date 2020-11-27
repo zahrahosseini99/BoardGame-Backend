@@ -122,47 +122,42 @@ class EditPlayView(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, pk=None):
         user = request.user
-        playInfo = play.objects.all().get(pk=pk)
-        plays_query = user.play.all()
-        if not plays_query.filter(pk=pk).exists():
+        playInfo = play.objects.get(pk=pk)
+        playmates_query = playInfo.players.all().filter(username=user)
+        if not playmates_query.exists():
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
         serializer = play_serializer.playSerializer(playInfo)
+        for player in serializer.data['players']:
+            player['username'] = UserProfile.objects.get(id=player['username']).username
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def put(self, request, pk=None):
         user = request.user
         data = request.data
+        for player in data['players']:
+            player['username'] = UserProfile.objects.get(username=player['username']).id
         playInfo = play.objects.all().get(pk=pk)
         plays_query = user.owner.all()
         if not plays_query.filter(pk=pk).exists():
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
-        serializer = self.get_serializer(instance=playInfo, data=request.data)
+        serializer = self.get_serializer(instance=playInfo, data=data)
         if serializer.is_valid(True):
-            p = serializer.update(instance=playInfo, validated_data=serializer.validated_data)
-            p.players.clear()
-            for player_data in data['players']:
-                player = UserProfile.objects.all().get(username=player_data['username'])
-                p.players.add(player)
+            serializer.update(instance=playInfo, validated_data=serializer.validated_data)
             return Response("OK", status=status.HTTP_202_ACCEPTED)
         return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
         user = request.user
-        player_query = user.play.all()
         owner_query = user.owner.all()
+        playInfo = play.objects.get(pk=pk)
+        playmates_query = playInfo.players.all().filter(username=user)
         if owner_query.filter(pk=pk).exists():
-            play = owner_query.get(pk=pk)
-            play.delete()
+            p = owner_query.get(pk=pk)
+            p.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        elif player_query.filter(pk=pk).exists():
-            play = player_query.get(pk=pk)
-            last_players = play.players.all()
-            play.players.clear()
-            for player_data in last_players:
-                if user == player_data:
-                    continue
-                player = UserProfile.objects.all().get(username=player_data['username'])
-                play.players.add(player)
+        elif playmates_query.exists():
+            pm = playInfo.players.all().get(username=user)
+            pm.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
