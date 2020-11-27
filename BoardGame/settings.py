@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'authentication',
     'user',
     'game',
+    'cafe',
 ]
 
 MIDDLEWARE = [
