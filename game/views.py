@@ -75,15 +75,13 @@ class CreatePlayView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         user = request.user
         data = request.data
-        data['owner']=user.id
+        for player in data['players']:
+            player['username'] = UserProfile.objects.get(username=player['username']).id
+        data['owner'] = user.id
         serializer = self.get_serializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        play = serializer.save()
-        play.owner=user
-        for player_data in data['players']:
-            player = UserProfile.objects.all().get(username=player_data['username'])
-            play.players.add(player)
+        serializer.save()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
 
 
