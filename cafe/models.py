@@ -2,6 +2,10 @@ from django.db import models
 from user.models import UserProfile
 from game.models import game
 
+class Gallery(models.Model):
+    id = models.AutoField(primary_key=True)
+    base64 = models.TextField('Base64', blank=True)
+
 class Cafe(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(blank=True, max_length=200)
@@ -12,7 +16,7 @@ class Cafe(models.Model):
     open_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     close_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     phone_number = models.CharField(blank=True, max_length=20)
-    gallery = models.TextField('Gallery', blank=True)
+    gallery = models.ManyToManyField(Gallery, related_name='Cafe', blank=True)
     city = models.CharField(blank=True, max_length=100)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
