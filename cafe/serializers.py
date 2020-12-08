@@ -7,7 +7,7 @@ from user.models import UserProfile
 class GameCafeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.game
-        fields = ('id', 'name','image')
+        fields = ('id', 'name')
 
 
 class CafeOwnerSerializer(serializers.ModelSerializer):

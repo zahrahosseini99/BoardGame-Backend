@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import filters
 from . import serializers as cafe_serializer
-from .models import Cafe
+from .models import Cafe,Gallery
 from user.models import UserProfile
 from game.models import game
 import random
@@ -45,6 +45,9 @@ class CreateCafeView(generics.CreateAPIView):
         for game_id in data['games']:
             g = game.objects.get(id=game_id['id'])
             cafe.games.add(g)
+        for image_id in data['gallery']:
+            i = Gallery.objects.create(base64=image_id['base64'])
+            cafe.gallery.add(i)
         return Response("OK", status=status.HTTP_202_ACCEPTED)
 
 
@@ -119,6 +122,11 @@ class EditCafeView(generics.RetrieveUpdateDestroyAPIView):
             for game_id in data['games']:
                 g = game.objects.get(id=game_id['id'])
                 cafe.games.add(g)
+                
+            cafe.gallery.clear()
+            for image_id in data['gallery']:
+                i = Gallery.objects.create(base64=image_id['base64'])
+                cafe.gallery.add(i)
             return Response("OK", status=status.HTTP_202_ACCEPTED)
         return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
 
