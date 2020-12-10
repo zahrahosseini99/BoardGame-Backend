@@ -33,13 +33,13 @@ class PlayerDetailsSerializer(serializers.ModelSerializer):
 
 class playSerializer(serializers.ModelSerializer):
     players = PlayerDetailsSerializer(many=True, required=False)
-    game = GamePlaySerializer()
+    game = GamePlaySerializer(read_only=True)
     owner = PlayOwnerSerializer
 
     class Meta:
         model = models.play
         fields = ('id', 'players', 'semi_players', 'game', 'date', 'place', 'owner')
-        read_only_fields = ('players', )
+        read_only_fields = ('players', 'games')
 
     def create(self, validated_data):
         playmates = validated_data.pop('players')
@@ -61,6 +61,5 @@ class playSerializer(serializers.ModelSerializer):
         instance.players.all().delete()
         for p in playmates:
             new_playmate = models.playmate.objects.create(**p)
-            print(new_playmate)
             instance.players.add(new_playmate)
         return instance

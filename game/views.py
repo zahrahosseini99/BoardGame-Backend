@@ -139,6 +139,7 @@ class EditPlayView(generics.RetrieveUpdateDestroyAPIView):
         for player in data['players']:
             player['username'] = UserProfile.objects.get(username=player['username']).id
         playInfo = play.objects.all().get(pk=pk)
+        playInfo.game = game.objects.get(id=data['game']['id'])
         plays_query = user.owner.all()
         if not plays_query.filter(pk=pk).exists():
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
