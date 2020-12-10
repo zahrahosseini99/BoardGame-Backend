@@ -14,7 +14,7 @@ class GameInfoPageSerializer(serializers.ModelSerializer):
 class GamePlaySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.game
-        fields = ('id')
+        fields = ('id', 'name')
 
 
 class PlayOwnerSerializer(serializers.ModelSerializer):
@@ -33,7 +33,7 @@ class PlayerDetailsSerializer(serializers.ModelSerializer):
 
 class playSerializer(serializers.ModelSerializer):
     players = PlayerDetailsSerializer(many=True, required=False)
-    game = GamePlaySerializer
+    game = GamePlaySerializer()
     owner = PlayOwnerSerializer
 
     class Meta:
