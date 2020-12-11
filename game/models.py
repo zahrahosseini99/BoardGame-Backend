@@ -28,6 +28,6 @@ class play(models.Model):
     owner = models.ForeignKey(UserProfile, related_name='owner', null=True, on_delete=models.CASCADE)
     players = models.ManyToManyField(playmate, related_name='play', blank=True)
     semi_players = models.CharField(blank=True, max_length=2000)
-    game = models.ForeignKey(game, related_name='play', on_delete=models.CASCADE)
+    game = models.ForeignKey(game, related_name='play', null=True, on_delete=models.CASCADE)
     date = models.DateField()
     place = models.CharField(blank=True, max_length=2000)

@@ -81,7 +81,9 @@ class CreatePlayView(generics.CreateAPIView):
         serializer = self.get_serializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
+        play = serializer.save()
+        play.game = game.objects.get(id=data['game'])
+        play.save()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
 
 
