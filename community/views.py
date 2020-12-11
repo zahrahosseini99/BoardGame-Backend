@@ -168,3 +168,16 @@ class JoinCommunityView(generics.UpdateAPIView):
         community_info.members.add(user)
         return Response("ok!", status=status.HTTP_200_OK)
 
+
+class LeaveCommunityView(generics.UpdateAPIView):
+    queryset = Community.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = community_serializer.CommunitySerializer
+
+    def put(self, request, pk=None):
+        user = request.user
+        community_info = Community.objects.get(pk=pk)
+        if not community_info.members.all().filter(id=user.id).exists():
+            return Response("This user does not exist in community", status=status.HTTP_400_BAD_REQUEST)
+        community_info.members.remove(user)
+        return Response("ok!", status=status.HTTP_200_OK)
