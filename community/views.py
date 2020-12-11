@@ -21,5 +21,8 @@ class CreateCommunityView(generics.CreateAPIView):
         serializer = self.get_serializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
+        community = serializer.save()
+        for member_id in data['members']:
+            m = UserProfile.objects.get(id=member_id['username'])
+            community.members.add(m)
         return Response("OK", status=status.HTTP_202_ACCEPTED)
