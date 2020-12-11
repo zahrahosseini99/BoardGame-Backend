@@ -1,5 +1,5 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from . import serializers as community_serializer
@@ -30,3 +30,16 @@ class CreateCommunityView(generics.CreateAPIView):
         community.image = data['image']
         community.save()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
+
+
+class CommunityInfoPageView(generics.RetrieveAPIView):
+    queryset = Community.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = community_serializer.CommunitySerializer
+
+    def get(self, request, pk=None):
+        communityInfo = Community.objects.all().get(pk=pk)
+        serializer = community_serializer.CommunitySerializer(communityInfo)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    
