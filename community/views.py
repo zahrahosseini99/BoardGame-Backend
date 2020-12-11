@@ -2,10 +2,18 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import filters
 from . import serializers as community_serializer
 from .models import Community
 from cafe.models import Gallery
 from user.models import UserProfile
+
+
+class SearchCommunityView(generics.ListAPIView):
+    queryset = Community.objects.all()
+    serializer_class = community_serializer.CommunitySerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^name', 'description']
 
 
 class CreateCommunityView(generics.CreateAPIView):
