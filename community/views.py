@@ -57,7 +57,7 @@ class EditCommunityView(generics.RetrieveUpdateDestroyAPIView):
         serializer = community_serializer.CommunitySerializer(community_info)
         serializer.data['owner'] = UserProfile.objects.get(id=serializer.data['owner']).username
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
 
     def put(self, request, pk=None):
         user = request.user
@@ -78,7 +78,7 @@ class EditCommunityView(generics.RetrieveUpdateDestroyAPIView):
                 community.members.add(m)
             return Response("OK", status=status.HTTP_202_ACCEPTED)
         return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
-    
+
     def delete(self, request, pk=None):
         user = request.user
         community_info = Community.objects.all().get(pk=pk)
@@ -88,4 +88,17 @@ class EditCommunityView(generics.RetrieveUpdateDestroyAPIView):
         community_info.delete()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
 
-    
+
+class OwnerCommunitiesListView(generics.RetrieveAPIView):
+
+    queryset = Community.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = community_serializer.CommunitySerializer
+
+    def get(self, request):
+        user = request.user
+        cafes_query = user.community_owner.all()
+        serializer = community_serializer.CommunitySerializer(cafes_query, many=True)
+        for community in serializer.data:
+            community['owner'] = UserProfile.objects.get(id=community['owner']).username
+        return Response(serializer.data, status=status.HTTP_200_OK)
