@@ -42,4 +42,20 @@ class CommunityInfoPageView(generics.RetrieveAPIView):
         serializer = community_serializer.CommunitySerializer(communityInfo)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+class EditCommunityView(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = Community.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = community_serializer.CommunitySerializer
+
+    def get(self, request, pk=None):
+        user = request.user
+        community_info = Community.objects.all().get(pk=pk)
+        community_query = user.community_owner.all()
+        if not community_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        serializer = community_serializer.CommunitySerializer(community_info)
+        serializer.data['owner'] = UserProfile.objects.get(id=serializer.data['owner']).username
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     
