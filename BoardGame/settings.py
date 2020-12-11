@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'user',
     'game',
     'cafe',
+    'community',
 ]
 
 MIDDLEWARE = [
