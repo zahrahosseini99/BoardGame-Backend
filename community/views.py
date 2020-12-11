@@ -92,11 +92,11 @@ class EditCommunityView(generics.RetrieveUpdateDestroyAPIView):
 class CommunitiesListView(generics.RetrieveAPIView):
     queryset = Community.objects.all()
     permission_classes = (AllowAny,)
-    serializer_class = community_serializer.CommunitySerializer
+    serializer_class = community_serializer.CommunitiesListSerializer
 
     def get(self, request):
         communitiesList = Community.objects.all()
-        serializer = community_serializer.CommunitySerializer(communitiesList, many=True)
+        serializer = community_serializer.CommunitiesListSerializer(communitiesList, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -104,12 +104,12 @@ class OwnerCommunitiesListView(generics.RetrieveAPIView):
 
     queryset = Community.objects.all()
     permission_classes = (IsAuthenticated,)
-    serializer_class = community_serializer.CommunitySerializer
+    serializer_class = community_serializer.CommunitiesListSerializer
 
     def get(self, request):
         user = request.user
         communities_query = user.community_owner.all()
-        serializer = community_serializer.CommunitySerializer(communities_query, many=True)
+        serializer = community_serializer.CommunitiesListSerializer(communities_query, many=True)
         for community in serializer.data:
             community['owner'] = UserProfile.objects.get(id=community['owner']).username
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -119,12 +119,12 @@ class MemberCommunitiesListView(generics.RetrieveAPIView):
 
     queryset = Community.objects.all()
     permission_classes = (IsAuthenticated,)
-    serializer_class = community_serializer.CommunitySerializer
+    serializer_class = community_serializer.CommunitiesListSerializer
 
     def get(self, request):
         user = request.user
         communities_query = user.community_member.all()
-        serializer = community_serializer.CommunitySerializer(communities_query, many=True)
+        serializer = community_serializer.CommunitiesListSerializer(communities_query, many=True)
         for community in serializer.data:
             community['owner'] = UserProfile.objects.get(id=community['owner']).username
         return Response(serializer.data, status=status.HTTP_200_OK)
