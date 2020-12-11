@@ -78,5 +78,14 @@ class EditCommunityView(generics.RetrieveUpdateDestroyAPIView):
                 community.members.add(m)
             return Response("OK", status=status.HTTP_202_ACCEPTED)
         return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk=None):
+        user = request.user
+        community_info = Community.objects.all().get(pk=pk)
+        community_query = user.community_owner.all()
+        if not community_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        community_info.delete()
+        return Response("OK", status=status.HTTP_202_ACCEPTED)
 
     
