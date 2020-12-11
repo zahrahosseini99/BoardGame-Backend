@@ -102,3 +102,18 @@ class OwnerCommunitiesListView(generics.RetrieveAPIView):
         for community in serializer.data:
             community['owner'] = UserProfile.objects.get(id=community['owner']).username
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MemberCommunitiesListView(generics.RetrieveAPIView):
+
+    queryset = Community.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = community_serializer.CommunitySerializer
+
+    def get(self, request):
+        user = request.user
+        cafes_query = user.community_member.all()
+        serializer = community_serializer.CommunitySerializer(cafes_query, many=True)
+        for community in serializer.data:
+            community['owner'] = UserProfile.objects.get(id=community['owner']).username
+        return Response(serializer.data, status=status.HTTP_200_OK)
