@@ -7,6 +7,7 @@ from . import serializers as community_serializer
 from .models import Community
 from cafe.models import Gallery
 from user.models import UserProfile
+import random
 
 
 class SearchCommunityView(generics.ListAPIView):
@@ -136,3 +137,17 @@ class MemberCommunitiesListView(generics.RetrieveAPIView):
         for community in serializer.data:
             community['owner'] = UserProfile.objects.get(id=community['owner']).username
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RandomCommunitiesListView(generics.RetrieveAPIView):
+    queryset = Community.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = community_serializer.CommunitiesListSerializer
+
+    def get(self, request):
+        communities_list = list(Community.objects.all())
+        if len(communities_list) > 20 :
+            serializer = community_serializer.CommunitiesListSerializer(random.sample(communities_list, 20), many=True)
+        else:
+            serializer = community_serializer.CommunitiesListSerializer(communities_list, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

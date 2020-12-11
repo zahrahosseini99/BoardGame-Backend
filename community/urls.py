@@ -10,4 +10,5 @@ urlpatterns = [
     path('communities_list/', views.CommunitiesListView.as_view()),
     path('owner_communities_list/', views.OwnerCommunitiesListView.as_view()),
     path('member_communities_list/', views.MemberCommunitiesListView.as_view()),
+    path('day_communities_list/', views.RandomCommunitiesListView.as_view()),
 ]
