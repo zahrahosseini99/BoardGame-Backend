@@ -151,3 +151,20 @@ class RandomCommunitiesListView(generics.RetrieveAPIView):
         else:
             serializer = community_serializer.CommunitiesListSerializer(communities_list, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class JoinCommunityView(generics.UpdateAPIView):
+    queryset = Community.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = community_serializer.CommunitySerializer
+
+    def put(self, request, pk=None):
+        user = request.user
+        community_info = Community.objects.get(pk=pk)
+        if community_info.lock:
+            return Response("The community is lock", status=status.HTTP_400_BAD_REQUEST)
+        if community_info.members.all().filter(id=user.id).exists():
+            return Response("User has already joined", status=status.HTTP_400_BAD_REQUEST)
+        community_info.members.add(user)
+        return Response("ok!", status=status.HTTP_200_OK)
+
