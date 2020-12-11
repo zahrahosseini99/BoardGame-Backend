@@ -96,6 +96,8 @@ class PlaysListView(generics.RetrieveUpdateAPIView):
         playmate_query = playmate.objects.filter(username=user)
         plays = list()
         for pm in playmate_query.all():
+            if len(pm.play.all()) == 0:
+                continue
             plays.append(pm.play.all()[0])
         serializer = play_serializer.playSerializer(plays, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -137,6 +139,7 @@ class EditPlayView(generics.RetrieveUpdateDestroyAPIView):
         for player in data['players']:
             player['username'] = UserProfile.objects.get(username=player['username']).id
         playInfo = play.objects.all().get(pk=pk)
+        playInfo.game = game.objects.get(id=data['game']['id'])
         plays_query = user.owner.all()
         if not plays_query.filter(pk=pk).exists():
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
@@ -153,6 +156,8 @@ class EditPlayView(generics.RetrieveUpdateDestroyAPIView):
         playmates_query = playInfo.players.all().filter(username=user)
         if owner_query.filter(pk=pk).exists():
             p = owner_query.get(pk=pk)
+            for pm in p.players.all():
+                pm.delete()
             p.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         elif playmates_query.exists():
