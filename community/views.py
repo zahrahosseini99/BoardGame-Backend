@@ -57,5 +57,26 @@ class EditCommunityView(generics.RetrieveUpdateDestroyAPIView):
         serializer = community_serializer.CommunitySerializer(community_info)
         serializer.data['owner'] = UserProfile.objects.get(id=serializer.data['owner']).username
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+
+    def put(self, request, pk=None):
+        user = request.user
+        data = request.data
+        community_info = Community.objects.all().get(pk=pk)
+        community_query = user.community_owner.all()
+
+        community_info.image = Gallery.objects.create(base64=data['image'])
+
+        if not community_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(instance=community_info, data=data)
+        if serializer.is_valid(True):
+            community = serializer.update(instance=community_info, validated_data=serializer.validated_data)
+            community.members.clear()
+            for member_id in data['members']:
+                m = UserProfile.objects.get(username=member_id['username'])
+                community.members.add(m)
+            return Response("OK", status=status.HTTP_202_ACCEPTED)
+        return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
 
     
