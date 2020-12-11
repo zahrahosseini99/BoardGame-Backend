@@ -7,9 +7,9 @@ from cafe.serializers import CafeGallerySerializer
 class CommunitySerializer(serializers.ModelSerializer):
     owner = UserSerializer
     members = UserSerializer(many=True, read_only=True, required=False)
-    image = CafeGallerySerializer
+    image = CafeGallerySerializer(read_only=True)
 
     class Meta:
         model = models.Community
         fields = ('name', 'owner', 'members', 'description', 'image', 'lock')
-        read_only_fields = ('members', )
+        read_only_fields = ('members', 'image')

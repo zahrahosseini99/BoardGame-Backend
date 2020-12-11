@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from . import serializers as community_serializer
 from .models import Community
+from cafe.models import Gallery
 from user.models import UserProfile
 
 
@@ -18,6 +19,7 @@ class CreateCommunityView(generics.CreateAPIView):
         for member in data['members']:
             member['username'] = UserProfile.objects.get(username=member['username']).id
         data['owner'] = user.id
+        data['image'] = Gallery.objects.create(base64=data['image'])
         serializer = self.get_serializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -25,4 +27,6 @@ class CreateCommunityView(generics.CreateAPIView):
         for member_id in data['members']:
             m = UserProfile.objects.get(id=member_id['username'])
             community.members.add(m)
+        community.image = data['image']
+        community.save()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
