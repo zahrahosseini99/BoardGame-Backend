@@ -44,11 +44,11 @@ class CreateCommunityView(generics.CreateAPIView):
 class CommunityInfoPageView(generics.RetrieveAPIView):
     queryset = Community.objects.all()
     permission_classes = (AllowAny,)
-    serializer_class = community_serializer.CommunitySerializer
+    serializer_class = community_serializer.CommunitiesListSerializer
 
     def get(self, request, pk=None):
         communityInfo = Community.objects.all().get(pk=pk)
-        serializer = community_serializer.CommunitySerializer(communityInfo)
+        serializer = community_serializer.CommunitiesListSerializer(communityInfo)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class EditCommunityView(generics.RetrieveUpdateDestroyAPIView):
