@@ -9,7 +9,7 @@ from game.models import play, game
 from cafe.models import Gallery
 from user.models import UserProfile
 import random
-
+import datetime
 
 class SearchCommunityView(generics.ListAPIView):
     queryset = Community.objects.all()
@@ -213,3 +213,25 @@ class CreateEventView(generics.CreateAPIView):
             event.gallery.add(i)
         event.save()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
+
+class JoinEventView(generics.UpdateAPIView):
+    queryset = Event.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = community_serializer.EventSerializer
+
+    def put(self, request, pk=None):
+        user = request.user
+        event_info = Event.objects.get(pk=pk)
+        if event_info.members.count()==event_info.maxMember:
+            return Response("The event is full", status=status.HTTP_400_BAD_REQUEST)
+        mydate = datetime.date.today()
+        mytime = datetime.datetime.now()
+        if mydate >= event_info.date:
+            return Response("finished", status=status.HTTP_400_BAD_REQUEST)
+        elif mydate == event_info.date:
+            if mytime >= event_info.time:
+                return Response("finished", status=status.HTTP_400_BAD_REQUEST)
+        if event_info.members.all().filter(id=user.id).exists():
+            return Response("User has already joined", status=status.HTTP_400_BAD_REQUEST)
+        event_info.members.add(user)
+        return Response("ok!", status=status.HTTP_200_OK)
