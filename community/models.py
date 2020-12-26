@@ -1,7 +1,7 @@
 from django.db import models
 from user.models import UserProfile
 from cafe.models import Gallery
-
+from game.models import game, play
 
 class Community(models.Model):
     name = models.CharField(blank=True, max_length=2000)

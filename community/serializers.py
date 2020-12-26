@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from . import models
 from user.serializers import UserSerializer, FullUserSerializer
-from cafe.serializers import CafeGallerySerializer
+from cafe.serializers import CafeGallerySerializer, GameCafeSerializer
+from game.models import play, game
 
 
 class CommunitySerializer(serializers.ModelSerializer):
@@ -24,3 +25,19 @@ class CommunitiesListSerializer(serializers.ModelSerializer):
         model = models.Community
         fields = ('name', 'owner', 'members', 'description', 'image', 'lock')
         read_only_fields = ('members', 'image')
+
+class FullPlaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.play
+        fields = ('id', 'players', 'semi_players', 'game', 'date', 'place', 'owner')
+
+class EventSerializer(serializers.ModelSerializer):
+    owner = FullUserSerializer()
+    members = FullUserSerializer(many=True, read_only=True, required=False)
+    games = GameCafeSerializer(many=True, read_only=True, required=False)
+    gallery = CafeGallerySerializer(read_only=True)
+    plays = FullPlaySerializer(read_only=True)
+    class Meta:
+        model = models.Event
+        fields = ('owner', 'members', 'games', 'date', 'deadline','maxMember','place','gallery','plays')
+        read_only_fields = ('members','games', 'gallery', 'plays' )
