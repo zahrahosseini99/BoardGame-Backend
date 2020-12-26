@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import filters
 from . import serializers as community_serializer
-from .models import Community
+from .models import Community, Event
+from game.models import play, game
 from cafe.models import Gallery
 from user.models import UserProfile
 import random
@@ -181,3 +182,37 @@ class LeaveCommunityView(generics.UpdateAPIView):
             return Response("This user does not exist in community", status=status.HTTP_400_BAD_REQUEST)
         community_info.members.remove(user)
         return Response("ok!", status=status.HTTP_200_OK)
+
+
+class CreateEventView(generics.CreateAPIView):
+    queryset = Event.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = community_serializer.EventSerializer
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        data = request.data
+        for member in data['members']:
+            member['username'] = UserProfile.objects.get(username=member['username']).id
+        max_members = data['maxMember']
+        if len(data['members']) > max_members:
+            return Response("too many members,change the limitation", status=status.HTTP_400_BAD_REQUEST)
+        data['owner'] = user.id
+        serializer = self.get_serializer(data=data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        event = serializer.save()
+        for member_id in data['members']:
+            m = UserProfile.objects.get(id=member_id['username'])
+            event.members.add(m)
+        for game_id in data['games']:
+            g = game.objects.get(id=game_id['id'])
+            event.games.add(g)
+        for image_id in data['gallery']:
+            i = Gallery.objects.create(base64=image_id['base64'])
+            event.gallery.add(i)
+        for play_id in data['plays']:
+            p = play.objects.get(id=play_id['id'])
+            event.plays.add(p)
+        event.save()
+        return Response("OK", status=status.HTTP_202_ACCEPTED)
