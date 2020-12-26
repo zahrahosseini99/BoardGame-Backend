@@ -13,4 +13,5 @@ urlpatterns = [
     path('day_communities_list/', views.RandomCommunitiesListView.as_view()),
     path('join_community/<int:pk>/', views.JoinCommunityView.as_view()),
     path('leave_community/<int:pk>/', views.LeaveCommunityView.as_view()),
+    path('create_event/', views.CreateEventView.as_view()),
 ]
