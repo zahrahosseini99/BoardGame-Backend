@@ -102,6 +102,9 @@ class PlaysListView(generics.RetrieveUpdateAPIView):
                 continue
             plays.append(pm.play.all()[0])
         serializer = play_serializer.playSerializer(plays, many=True)
+        for user_play in serializer.data:
+            for player in user_play['players']:
+                player['username'] = UserProfile.objects.get(id=player['username']).username
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
