@@ -235,3 +235,16 @@ class JoinEventView(generics.UpdateAPIView):
             return Response("User has already joined", status=status.HTTP_400_BAD_REQUEST)
         event_info.members.add(user)
         return Response("ok!", status=status.HTTP_200_OK)
+
+class LeaveEventView(generics.UpdateAPIView):
+    queryset = Event.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = community_serializer.EventSerializer
+
+    def put(self, request, pk=None):
+        user = request.user
+        event_info = Event.objects.get(pk=pk)
+        if not event_info.members.all().filter(id=user.id).exists():
+            return Response("This user does not exist in event", status=status.HTTP_400_BAD_REQUEST)
+        event_info.members.remove(user)
+        return Response("ok!", status=status.HTTP_200_OK)
