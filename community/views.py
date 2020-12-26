@@ -211,8 +211,5 @@ class CreateEventView(generics.CreateAPIView):
         for image_id in data['gallery']:
             i = Gallery.objects.create(base64=image_id['base64'])
             event.gallery.add(i)
-        for play_id in data['plays']:
-            p = play.objects.get(id=play_id['id'])
-            event.plays.add(p)
         event.save()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
