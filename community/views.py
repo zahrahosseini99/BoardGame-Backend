@@ -136,7 +136,7 @@ class MemberCommunitiesListView(generics.RetrieveAPIView):
         communities_query = user.community_member.all()
         serializer = community_serializer.CommunitiesListSerializer(communities_query, many=True)
         for community in serializer.data:
-            community['owner'] = UserProfile.objects.get(id=community['owner']).username
+            community['owner'] = UserProfile.objects.get(username=community['owner']['username']).username
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
