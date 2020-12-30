@@ -12,7 +12,7 @@ class CommunitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Community
-        fields = ('name', 'owner', 'members', 'description', 'image', 'lock')
+        fields = ('id', 'name', 'owner', 'members', 'description', 'image', 'lock')
         read_only_fields = ('members', 'image')
 
 
