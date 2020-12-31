@@ -248,3 +248,19 @@ class LeaveEventView(generics.UpdateAPIView):
             return Response("This user does not exist in event", status=status.HTTP_400_BAD_REQUEST)
         event_info.members.remove(user)
         return Response("ok!", status=status.HTTP_200_OK)
+
+
+class EditEventView(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = Event.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = community_serializer.editEventSerializer
+
+    def get(self, request, pk=None):
+        user = request.user
+        event_info = Event.objects.get(pk=pk)
+        event_query = user.Event_owner.all()
+        if not event_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        serializer = community_serializer.editEventSerializer(event_info)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
