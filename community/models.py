@@ -5,6 +5,7 @@ from game.models import game, play
 
 
 class Event(models.Model):
+    id = models.AutoField(primary_key=True)
     owner = models.ForeignKey(UserProfile, related_name='Event_owner', null=True, on_delete=models.CASCADE)
     members = models.ManyToManyField(UserProfile, related_name='Event_member', blank=True)
     games = models.ManyToManyField(game, related_name='Event', blank=True)
