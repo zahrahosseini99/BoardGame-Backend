@@ -312,5 +312,8 @@ class EditEventView(generics.RetrieveUpdateDestroyAPIView):
         event_query = user.Event_owner.all()
         if not event_query.filter(pk=pk).exists():
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        gallery_info = event_info.gallery.all()
+        for i in gallery_info:
+            i.delete()
         event_info.delete()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
