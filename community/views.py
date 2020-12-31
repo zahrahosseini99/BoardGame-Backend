@@ -299,4 +299,11 @@ class EditEventView(generics.RetrieveUpdateDestroyAPIView):
             return Response("OK", status=status.HTTP_202_ACCEPTED)
         return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
     
-    
+    def delete(self, request, pk=None):
+        user = request.user
+        event_info = Event.objects.all().get(pk=pk)
+        event_query = user.Event_owner.all()
+        if not event_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        event_info.delete()
+        return Response("OK", status=status.HTTP_202_ACCEPTED)
