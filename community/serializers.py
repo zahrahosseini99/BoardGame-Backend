@@ -28,7 +28,7 @@ class MinusPlaySerializer(serializers.ModelSerializer):
         model = models.play
         fields = ('id',)
 
-        
+
 class editEventSerializer(serializers.ModelSerializer):
     owner = UserSerializer
     members = FullUserSerializer(many=True, read_only=True, required=False)
@@ -42,25 +42,31 @@ class editEventSerializer(serializers.ModelSerializer):
         read_only_fields = ('members', 'games', 'gallery', 'plays')
 
 
+class MinusEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Event
+        fields = ('id',)
+
+
 class CommunitySerializer(serializers.ModelSerializer):
     owner = UserSerializer
     members = UserSerializer(many=True, read_only=True, required=False)
     image = CafeGallerySerializer(read_only=True)
+    events = MinusEventSerializer(many=True, read_only=True, required=False)
 
     class Meta:
         model = models.Community
-        fields = ('id', 'name', 'owner', 'members', 'description', 'image', 'lock')
-        read_only_fields = ('members', 'image')
+        fields = ('id', 'name', 'owner', 'members', 'description', 'image', 'lock', 'events')
+        read_only_fields = ('members', 'image', 'events')
 
 
 class CommunitiesListSerializer(serializers.ModelSerializer):
     owner = FullUserSerializer()
     members = FullUserSerializer(many=True, read_only=True, required=False)
     image = CafeGallerySerializer(read_only=True)
+    events = MinusEventSerializer(many=True, read_only=True, required=False)
 
     class Meta:
         model = models.Community
-        fields = ('id', 'name', 'owner', 'members', 'description', 'image', 'lock')
-        read_only_fields = ('members', 'image')
-
-
+        fields = ('id', 'name', 'owner', 'members', 'description', 'image', 'lock', 'events')
+        read_only_fields = ('members', 'image', 'events')

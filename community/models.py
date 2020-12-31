@@ -24,4 +24,4 @@ class Community(models.Model):
     description = models.TextField('Description')
     image = models.ForeignKey(Gallery, related_name='community', null=True, blank=True, on_delete=models.CASCADE)
     lock = models.BooleanField('Lock', default=False)
-    events = models.ManyToManyField(Event, related_name='community', null=True, blank=True)
+    events = models.ManyToManyField(Event, related_name='community', blank=True)
