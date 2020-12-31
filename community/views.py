@@ -99,6 +99,9 @@ class EditCommunityView(generics.RetrieveUpdateDestroyAPIView):
         community_query = user.community_owner.all()
         if not community_query.filter(pk=pk).exists():
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        events_info = community_info.events.all()
+        for e in events_info:
+            e.delete()
         community_info.delete()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
 
