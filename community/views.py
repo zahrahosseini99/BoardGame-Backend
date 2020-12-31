@@ -264,3 +264,39 @@ class EditEventView(generics.RetrieveUpdateDestroyAPIView):
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
         serializer = community_serializer.editEventSerializer(event_info)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def put(self, request, pk=None):
+        user = request.user
+        data = request.data
+        event_info = Event.objects.get(pk=pk)
+        event_query = user.Event_owner.all()
+
+        if not event_query.filter(pk=pk).exists():
+            return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(instance=event_info, data=data)
+        if serializer.is_valid(True):
+            event = serializer.update(instance=event_info, validated_data=serializer.validated_data)
+            event.members.clear()
+            for member_id in data['members']:
+                m = UserProfile.objects.get(username=member_id['username'])
+                event.members.add(m)
+
+            event.gallery.clear()
+            for image_id in data['gallery']:
+                i = Gallery.objects.create(base64=image_id['base64'])
+                event.gallery.add(i)
+
+            event.games.clear()
+            for game_id in data['games']:
+                g = game.objects.get(id=game_id['id'])
+                event.games.add(g)
+                
+            event.plays.clear()
+            for play_id in data['plays']:
+                p = play.objects.get(id=play_id['id'])
+                event.plays.add(p)
+
+            return Response("OK", status=status.HTTP_202_ACCEPTED)
+        return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
+    
+    
