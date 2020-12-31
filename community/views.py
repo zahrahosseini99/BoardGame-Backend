@@ -86,6 +86,10 @@ class EditCommunityView(generics.RetrieveUpdateDestroyAPIView):
             for member_id in data['members']:
                 m = UserProfile.objects.get(username=member_id['username'])
                 community.members.add(m)
+            community.events.clear()
+            for event_id in data['events']:
+                e = Event.objects.get(id=event_id['id'])
+                community.events.add(e)
             return Response("OK", status=status.HTTP_202_ACCEPTED)
         return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
 
@@ -290,7 +294,7 @@ class EditEventView(generics.RetrieveUpdateDestroyAPIView):
             for game_id in data['games']:
                 g = game.objects.get(id=game_id['id'])
                 event.games.add(g)
-                
+
             event.plays.clear()
             for play_id in data['plays']:
                 p = play.objects.get(id=play_id['id'])
@@ -298,7 +302,7 @@ class EditEventView(generics.RetrieveUpdateDestroyAPIView):
 
             return Response("OK", status=status.HTTP_202_ACCEPTED)
         return Response("Not OK", status=status.HTTP_400_BAD_REQUEST)
-    
+
     def delete(self, request, pk=None):
         user = request.user
         event_info = Event.objects.all().get(pk=pk)
