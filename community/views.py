@@ -219,7 +219,7 @@ class CreateEventView(generics.CreateAPIView):
             i = Gallery.objects.create(base64=image_id['base64'])
             event.gallery.add(i)
         event.save()
-        c = Community.objects.get(id=data['community']['id'])
+        c = Community.objects.get(id=data['community'])
         c.events.add(event)
         c.save()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
