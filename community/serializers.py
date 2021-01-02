@@ -19,7 +19,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Event
-        fields = ('owner', 'members', 'games', 'date', 'time', 'maxMember', 'place', 'gallery', 'plays')
+        fields = ('id', 'owner', 'members', 'games', 'date', 'time', 'maxMember', 'place', 'gallery', 'plays')
         read_only_fields = ('members', 'games', 'gallery', 'plays')
 
 
@@ -38,7 +38,7 @@ class editEventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Event
-        fields = ('owner', 'members', 'games', 'date', 'time', 'maxMember', 'place', 'gallery', 'plays')
+        fields = ('id', 'owner', 'members', 'games', 'date', 'time', 'maxMember', 'place', 'gallery', 'plays')
         read_only_fields = ('members', 'games', 'gallery', 'plays')
 
 
