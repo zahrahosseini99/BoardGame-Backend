@@ -64,7 +64,7 @@ class CommunitiesListSerializer(serializers.ModelSerializer):
     owner = FullUserSerializer()
     members = FullUserSerializer(many=True, read_only=True, required=False)
     image = CafeGallerySerializer(read_only=True)
-    events = MinusEventSerializer(many=True, read_only=True, required=False)
+    events = editEventSerializer(many=True, read_only=True, required=False)
 
     class Meta:
         model = models.Community
