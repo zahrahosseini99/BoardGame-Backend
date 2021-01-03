@@ -320,3 +320,13 @@ class EditEventView(generics.RetrieveUpdateDestroyAPIView):
             i.delete()
         event_info.delete()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
+
+class EventInfoPageView(generics.RetrieveAPIView):
+    queryset = Event.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = community_serializer.editEventSerializer
+
+    def get(self, request, pk=None):
+        eventInfo = Event.objects.all().get(pk=pk)
+        serializer = community_serializer.editEventSerializer(eventInfo)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
