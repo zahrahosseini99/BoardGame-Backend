@@ -136,5 +136,8 @@ class EditCafeView(generics.RetrieveUpdateDestroyAPIView):
         cafes_query = user.Cafe.all()
         if not cafes_query.filter(pk=pk).exists():
             return Response("Bad Request!!", status=status.HTTP_400_BAD_REQUEST)
+        gallery_info = cafe_info.gallery.all()
+        for i in gallery_info:
+            i.delete()
         cafe_info.delete()
         return Response("OK", status=status.HTTP_202_ACCEPTED)

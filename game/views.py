@@ -81,7 +81,9 @@ class CreatePlayView(generics.CreateAPIView):
         serializer = self.get_serializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
+        play = serializer.save()
+        play.game = game.objects.get(id=data['game'])
+        play.save()
         return Response("OK", status=status.HTTP_202_ACCEPTED)
 
 
@@ -100,6 +102,9 @@ class PlaysListView(generics.RetrieveUpdateAPIView):
                 continue
             plays.append(pm.play.all()[0])
         serializer = play_serializer.playSerializer(plays, many=True)
+        for user_play in serializer.data:
+            for player in user_play['players']:
+                player['username'] = UserProfile.objects.get(id=player['username']).username
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
